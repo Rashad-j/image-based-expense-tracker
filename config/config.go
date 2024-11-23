@@ -1,9 +1,14 @@
+// Package config is the logic for the project configuration.
+// it Utilizes the builder pattern
 package config
 
 import "github.com/caarlos0/env"
 
 type Config struct {
-	Port string `env:"PORT" envDefault:":8083"`
+	Port                         string `env:"PORT" envDefault:":8083"`
+	GoogleApplicationCredentials string `env:"GOOGLE_APPLICATION_CREDENTIALS" envDefault:"./google-application-credentials.json"`
+	ChatGPTApiKey                string `env:"CHAT_GPT_API_KEY" envDefault:""`
+	ChatGPTModel                 string `env:"CHAT_GPT_MODEL" envDefault:"gpt-4o-mini"`
 }
 
 func ReadEnvConfig() (*Config, error) {
@@ -12,4 +17,24 @@ func ReadEnvConfig() (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+func (c *Config) WithPort(port string) *Config {
+	c.Port = port
+	return c
+}
+
+func (c *Config) WithGoogleApplicationCredentials(credentials string) *Config {
+	c.GoogleApplicationCredentials = credentials
+	return c
+}
+
+func (c *Config) WithChatGPTApiKey(key string) *Config {
+	c.ChatGPTApiKey = key
+	return c
+}
+
+func (c *Config) WithChatGPTModel(model string) *Config {
+	c.ChatGPTModel = model
+	return c
 }
