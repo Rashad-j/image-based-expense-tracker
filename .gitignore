@@ -2,3 +2,4 @@
 *.json
 *.jpg
 .env
+bin/
