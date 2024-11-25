@@ -1,62 +1,74 @@
 package parser
 
 import (
-	"context"
 	"fmt"
 	"github.com/Rashad-j/image-based-expense-tracker/config"
-	"github.com/sashabaranov/go-openai"
+	expenses "github.com/Rashad-j/image-based-expense-tracker/internal/core/expense"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/chatgpt"
 )
 
+type chatgptClient interface {
+	SendRequest(payload chatgpt.OpenAIRequest) (chatgpt.OpenAIResponse, error)
+}
+
 type ChatGPTParser struct {
-	cfg *config.Config
+	cfg    *config.Config
+	client chatgptClient
 }
 
 const prompt = `
-	You are a receipt parser. Given the following receipt text, extract and return a JSON object containing items (name, count and price), and include the total.
+	Given the following receipt text, extract and return a JSON object containing items (name, count and price), and include the total.
 	Note there could be duplicate items, make sure to count them as well.
 	Also, add a category to the json object to classify this purchase.
 	Receipt text:`
 
-func NewChatGPTParser(cfg *config.Config) *ChatGPTParser {
-	return &ChatGPTParser{cfg: cfg}
+func NewChatGPTParser(cfg *config.Config, client chatgptClient) *ChatGPTParser {
+	return &ChatGPTParser{
+		cfg:    cfg,
+		client: client,
+	}
 }
 
 func (c *ChatGPTParser) Parse(ocrText string) (string, error) {
-	// TODO: make sure to break this down into separate functions
-	// and also add interfaces where needed.
-	client := openai.NewClient(c.cfg.ChatGPTApiKey)
-	ctx := context.Background()
-
-	prompt := fmt.Sprintf(`
-	%s
-	%s
-	`, prompt, ocrText)
-
-	resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
-		Model: c.cfg.ChatGPTModel,
-		Messages: []openai.ChatCompletionMessage{
-			{Role: openai.ChatMessageRoleSystem, Content: "You are a helpful assistant that parses receipts."},
-			{Role: openai.ChatMessageRoleUser, Content: prompt},
-		},
-	})
-
-	if err != nil {
-		return "", fmt.Errorf("ChatGPT API call failed: %v", err)
-	}
-
-	return resp.Choices[0].Message.Content, nil
+	fmt.Printf("parsing text", ocrText)
+	return c.askChatGPT(ocrText)
 }
 
 // getCleanJSON will receive a chatgpt text with a json object in it
 // this function will get the json object out of this generated text and parse it into
 // the expenses struct
-func getCleanJSON(chatGPTText string) Expenses {
+func getCleanJSON(chatGPTText string) expenses.Expenses {
 	// TODO: implement
-	return Expenses{}
+	return expenses.Expenses{}
 }
 
 // askChatGPT will receive an ocr text and ask chatgpt to get the items and their price
-func askChatGPT(ocrText string) (string, error) {
-	// TODO: implement
-	return "", nil
+func (c *ChatGPTParser) askChatGPT(ocrText string) (string, error) {
+	text := fmt.Sprintf(`
+		%s 
+		%s
+		`, prompt, ocrText)
+	messages := []chatgpt.Message{
+		{
+			Role: "user",
+			Content: []interface{}{
+				chatgpt.TextContent{
+					Type: "text",
+					Text: text,
+				},
+			},
+		},
+	}
+
+	payload := chatgpt.CreateRequestPayload(c.cfg.ChatGPTModel, 200, messages)
+	response, err := c.client.SendRequest(payload)
+	if err != nil {
+		return "", err
+	}
+
+	if len(response.Choices) > 0 {
+		return response.Choices[0].Message.Content, nil
+	}
+
+	return "", fmt.Errorf("no content found in OpenAI response")
 }
