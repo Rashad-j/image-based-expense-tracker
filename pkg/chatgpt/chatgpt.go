@@ -5,19 +5,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Rashad-j/image-based-expense-tracker/config"
 	"io"
+
 	"net/http"
 )
 
-// Config holds the configuration needed for the OpenAI API.
-type Config struct {
-	APIKey string
-	Model  string
-}
-
 // Client represents a ChatGPT client.
 type Client struct {
-	config *Config
+	cfg    *config.Config
 	client httpClient
 }
 
@@ -66,9 +62,9 @@ type OpenAIResponse struct {
 }
 
 // NewClient creates a new ChatGPT client.
-func NewClient(config *Config, httpClient httpClient) *Client {
+func NewClient(cfg *config.Config, httpClient httpClient) *Client {
 	return &Client{
-		config: config,
+		cfg:    cfg,
 		client: httpClient,
 	}
 }
@@ -97,7 +93,7 @@ func (c *Client) SendRequest(payload OpenAIRequest) (OpenAIResponse, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.config.APIKey)
+	req.Header.Set("Authorization", "Bearer "+c.cfg.ChatGPTApiKey)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
