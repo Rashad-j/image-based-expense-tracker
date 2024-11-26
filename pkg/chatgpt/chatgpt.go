@@ -11,8 +11,8 @@ import (
 	"net/http"
 )
 
-// Client represents a ChatGPT client.
-type Client struct {
+// ClientHttp represents a ChatGPT client.
+type ClientHttp struct {
 	cfg    *config.Config
 	client httpClient
 }
@@ -61,9 +61,9 @@ type OpenAIResponse struct {
 	} `json:"choices"`
 }
 
-// NewClient creates a new ChatGPT client.
-func NewClient(cfg *config.Config, httpClient httpClient) *Client {
-	return &Client{
+// NewClientUsingHttp creates a new ChatGPT client.
+func NewClientUsingHttp(cfg *config.Config, httpClient httpClient) *ClientHttp {
+	return &ClientHttp{
 		cfg:    cfg,
 		client: httpClient,
 	}
@@ -79,7 +79,7 @@ func CreateRequestPayload(model string, maxTokens int, messages []Message) OpenA
 }
 
 // SendRequest sends a request to the OpenAI API and returns the response.
-func (c *Client) SendRequest(payload OpenAIRequest) (OpenAIResponse, error) {
+func (c *ClientHttp) SendRequest(payload OpenAIRequest) (OpenAIResponse, error) {
 	const openAIEndpoint = "https://api.openai.com/v1/chat/completions"
 
 	jsonPayload, err := json.Marshal(payload)
@@ -114,3 +114,6 @@ func (c *Client) SendRequest(payload OpenAIRequest) (OpenAIResponse, error) {
 
 	return r, nil
 }
+
+// TODO: this client is broken, it doesn not return the complete json responses.
+// Just to investigate in future
