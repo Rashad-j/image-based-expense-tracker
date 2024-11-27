@@ -54,14 +54,9 @@ image-expense-tracker/
 │       ├── storage.go              # File storage utilities
 │       └── response.go             # Response helper functions
 ├── test/
-│   ├── integration/
-│   │   ├── expense_test.go         # Integration tests for expense operations
-│   │   └── upload_test.go          # Integration tests for receipt uploads
-│   └── unit/
-│       ├── parser_test.go          # Unit tests for expense parsing logic
-│       ├── service_test.go         # Unit tests for expense service logic
-│       ├── ocr_test.go             # Unit tests for OCR processing
-│       └── report_test.go          # Unit tests for report generation
+│   └── integration/
+│       ├── expense_test.go         # Integration tests for expense operations
+│       └── upload_test.go          # Integration tests for receipt uploads
 ├── Dockerfile                      # Dockerfile for containerizing the application
 ├── go.mod                          # Go module dependencies
 ├── go.sum                          # Go module dependency checksums
