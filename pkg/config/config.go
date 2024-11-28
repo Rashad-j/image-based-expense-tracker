@@ -5,10 +5,15 @@ package config
 import "github.com/caarlos0/env"
 
 type Config struct {
-	Port                         string `env:"PORT" envDefault:":8083"`
+	// server
+	Port string `env:"PORT" envDefault:":8083"`
+	// google
 	GoogleApplicationCredentials string `env:"GOOGLE_APPLICATION_CREDENTIALS" envDefault:"./google-application-credentials.json"`
-	ChatGPTApiKey                string `env:"CHAT_GPT_API_KEY" envDefault:""`
-	ChatGPTModel                 string `env:"CHAT_GPT_MODEL" envDefault:"gpt-4o-mini"`
+	// chatgpt
+	ChatGPTApiKey string `env:"CHAT_GPT_API_KEY" envDefault:""`
+	ChatGPTModel  string `env:"CHAT_GPT_MODEL" envDefault:"gpt-4o-mini"`
+	// other
+	LoggerLevel string `env:"LOGGER_LEVEL" envDefault:"0"`
 }
 
 func ReadEnvConfig() (*Config, error) {
