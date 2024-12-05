@@ -3,9 +3,10 @@ package ocr
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/Rashad-j/image-based-expense-tracker/config"
-	"github.com/Rashad-j/image-based-expense-tracker/pkg/chatgpt"
 	"io"
+
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/chatgpt"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
 )
 
 const prompt = `

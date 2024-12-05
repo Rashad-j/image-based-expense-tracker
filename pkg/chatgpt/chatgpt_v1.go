@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Rashad-j/image-based-expense-tracker/config"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
 	openai "github.com/sashabaranov/go-openai"
 )
 

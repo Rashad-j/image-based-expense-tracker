@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Rashad-j/image-based-expense-tracker/config"
-	expenses "github.com/Rashad-j/image-based-expense-tracker/internal/core/expense"
-	"github.com/sashabaranov/go-openai"
 	"regexp"
+
+	expenses "github.com/Rashad-j/image-based-expense-tracker/internal/core/expense"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
+	"github.com/sashabaranov/go-openai"
 )
 
 type chatgptClient interface {

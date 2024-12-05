@@ -1,14 +1,15 @@
 package ocr
 
 import (
-	vision "cloud.google.com/go/vision/apiv1"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Rashad-j/image-based-expense-tracker/config"
-	"google.golang.org/api/option"
 	"io"
 	"time"
+
+	vision "cloud.google.com/go/vision/apiv1"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
+	"google.golang.org/api/option"
 )
 
 // GoogleVisionProcessor implements OCRProcessor using the Google Vision API.

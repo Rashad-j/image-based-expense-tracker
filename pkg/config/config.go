@@ -6,7 +6,7 @@ import "github.com/caarlos0/env"
 
 type Config struct {
 	// server
-	Port string `env:"PORT" envDefault:":8083"`
+	Port string `env:"PORT" envDefault:"8083"`
 	// google
 	GoogleApplicationCredentials string `env:"GOOGLE_APPLICATION_CREDENTIALS" envDefault:"./google-application-credentials.json"`
 	// chatgpt

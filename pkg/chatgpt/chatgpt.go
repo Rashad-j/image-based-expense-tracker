@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Rashad-j/image-based-expense-tracker/config"
 	"io"
 
 	"net/http"
+
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
 )
 
 // ClientHttp represents a ChatGPT client.

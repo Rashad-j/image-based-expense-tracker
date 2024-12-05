@@ -1,35 +1,57 @@
 # Variables
-BINARY_NAME = ocr_parser
-SRC_DIR = ./cmd/app/main.go
-BUILD_DIR = ./bin
+APP_NAME := image-expense-tracker
+APP_DIR := cmd/app
+DOCKER_IMAGE := $(APP_NAME):latest
+DOCKER_CONTAINER := $(APP_NAME)-container
 
-# Default target
-all: build run
+# Default target: show help
+.DEFAULT_GOAL := help
 
-# Build the binary
-build:
-	@echo "Building the binary..."
-	@mkdir -p $(BUILD_DIR)
-	@go build -o $(BUILD_DIR)/$(BINARY_NAME) $(SRC_DIR)/main.go
-	@echo "Build complete. Binary located at $(BUILD_DIR)/$(BINARY_NAME)"
-
-# Run the binary
-run: build
-	@echo "Running the binary..."
-	@$(BUILD_DIR)/$(BINARY_NAME)
-
-# Clean up build artifacts
-clean:
-	@echo "Cleaning up..."
-	@rm -rf $(BUILD_DIR)
-	@echo "Clean complete."
-
-# Help message
+# Help documentation
+.PHONY: help
 help:
 	@echo "Available commands:"
-	@echo "  make build    - Build the binary"
-	@echo "  make run      - Build and run the binary"
-	@echo "  make clean    - Remove build artifacts"
-	@echo "  make help     - Show this help message"
+	@echo "  make build          Build the Go application binary"
+	@echo "  make run            Run the application locally"
+	@echo "  make docker-build   Build a Docker image for the application"
+	@echo "  make docker-run     Run the application in a Docker container"
+	@echo "  make docker-stop    Stop the running Docker container"
+	@echo "  make docker-clean   Remove Docker container and image"
 
-.PHONY: all build run clean help
+# Build the Go binary
+.PHONY: build
+build: ## Build the Go application binary
+	@echo "Building the Go application..."
+	go build -o bin/$(APP_NAME) $(APP_DIR)/main.go
+
+# Run the application locally
+.PHONY: run
+run: build ## Run the Go application locally
+	@echo "Running the Go application locally..."
+	./bin/$(APP_NAME)
+
+# Build the Docker image
+.PHONY: docker-build
+docker-build: ## Build a Docker image for the application
+	@echo "Building Docker image $(DOCKER_IMAGE)..."
+	docker build -t $(DOCKER_IMAGE) .
+
+# Run the Docker container
+.PHONY: docker-run
+docker-run: docker-build ## Run the application in a Docker container
+	@echo "Running Docker container $(DOCKER_CONTAINER)..."
+	docker run --rm -p 8080:8080 --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE)
+
+# Stop the Docker container
+.PHONY: docker-stop
+docker-stop: ## Stop the running Docker container
+	@echo "Stopping Docker container $(DOCKER_CONTAINER)..."
+	docker stop $(DOCKER_CONTAINER) || true
+
+# Clean up Docker artifacts
+.PHONY: docker-clean
+docker-clean: ## Remove Docker container and image
+	@echo "Removing Docker container $(DOCKER_CONTAINER)..."
+	docker rm $(DOCKER_CONTAINER) || true
+	@echo "Removing Docker image $(DOCKER_IMAGE)..."
+	docker rmi $(DOCKER_IMAGE) || true

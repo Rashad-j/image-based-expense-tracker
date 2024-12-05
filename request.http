@@ -1,0 +1,10 @@
+#### example request
+curl -X POST http://localhost:8083/v1/analyze \
+-H "Authorization: Bearer tmp-key" \
+
+####
+IMAGE_BASE64=$(base64 -w 0 /path/to/receipt.jpg)
+curl -X POST http://localhost:8083/v1/analyze \
+-H "Authorization: Bearer tmp-key" \
+-H "Content-Type: application/json" \
+-d '{"image_base64": "data:image/jpeg;base64,'"${IMAGE_BASE64}"'"}'

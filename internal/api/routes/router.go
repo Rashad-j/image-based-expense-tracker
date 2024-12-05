@@ -12,7 +12,7 @@ func SetupRouter(authKey string) *gin.Engine {
 
 	// Middleware
 	// router.Use(middleware.MetricsMiddleware())
-	router.Use(middleware.AuthMiddleware("authKey"))
+	router.Use(middleware.AuthMiddleware(authKey))
 
 	// Handlers
 	expenseHandler := handlers.NewExpenseHandler()
