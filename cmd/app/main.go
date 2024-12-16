@@ -9,7 +9,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Rashad-j/image-based-expense-tracker/internal/api/handlers"
 	"github.com/Rashad-j/image-based-expense-tracker/internal/api/routes"
+	"github.com/Rashad-j/image-based-expense-tracker/internal/core/ocr"
+	"github.com/Rashad-j/image-based-expense-tracker/internal/core/parser"
+	"github.com/Rashad-j/image-based-expense-tracker/internal/services"
+	"github.com/Rashad-j/image-based-expense-tracker/pkg/chatgpt"
 	"github.com/Rashad-j/image-based-expense-tracker/pkg/config"
 	"github.com/Rashad-j/image-based-expense-tracker/pkg/logger"
 )
@@ -24,8 +29,21 @@ func main() {
 	// Init logger
 	_ = logger.InitLogger(cfg.LoggerLevel)
 
+	// Initialize OCR processor
+	OCRProcessor := ocr.NewGoogleVisionProcessor(cfg)
+
+	// Initialize parser
+	chatgptClient := chatgpt.NewClientUsingOpenapiLib(cfg)
+	TextParser := parser.NewChatGPTParser(cfg, chatgptClient)
+
+	// Initialize expense service
+	ExpenseService := services.NewExpenseService(*cfg, OCRProcessor, TextParser)
+
+	// Initialize API handlers
+	handlers := handlers.NewExpenseHandler(ExpenseService)
+
 	// Initialize router
-	router := routes.SetupRouter("tmp-key")
+	router := routes.SetupRouter("tmp-key", handlers)
 
 	// Start server
 	srv := &http.Server{

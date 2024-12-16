@@ -16,8 +16,8 @@ type chatgptClient interface {
 }
 
 type ChatGPTParser struct {
-	cfg    *config.Config
-	client chatgptClient
+	cfg           *config.Config
+	chatgptClient chatgptClient
 }
 
 const prompt = `
@@ -29,27 +29,25 @@ const prompt = `
 
 func NewChatGPTParser(cfg *config.Config, client chatgptClient) *ChatGPTParser {
 	return &ChatGPTParser{
-		cfg:    cfg,
-		client: client,
+		cfg:           cfg,
+		chatgptClient: client,
 	}
 }
 
-func (c *ChatGPTParser) Parse(ctx context.Context, ocrText string) (*expenses.Expenses, error) {
+func (c *ChatGPTParser) Parse(ctx context.Context, ocrText string) (expenses.Expenses, error) {
 	chatgptText, err := c.askChatGPT(ctx, ocrText)
 	if err != nil {
-		return nil, fmt.Errorf("failed to ask chatgpt: %w", err)
+		return expenses.Expenses{}, fmt.Errorf("failed to ask chatgpt: %w", err)
 	}
 
 	jsonText, err := extractJSONFromResponse(chatgptText)
 	if err != nil {
-		return nil, fmt.Errorf("failed to extract JSON from response: %w", err)
+		return expenses.Expenses{}, fmt.Errorf("failed to extract JSON from response: %w", err)
 	}
-
-	fmt.Println("json text", jsonText)
 
 	expense, err := parseExpense(jsonText)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse expense: %w", err)
+		return expenses.Expenses{}, fmt.Errorf("failed to parse expense: %w", err)
 	}
 
 	return expense, nil
@@ -69,7 +67,7 @@ func (c *ChatGPTParser) askChatGPT(ctx context.Context, ocrText string) (string,
 		},
 	}
 
-	response, err := c.client.Request(ctx, messages)
+	response, err := c.chatgptClient.Request(ctx, messages)
 	if err != nil {
 		return "", fmt.Errorf("failed to ask chatgpt: %w", err)
 	}
@@ -88,11 +86,11 @@ func extractJSONFromResponse(responseText string) (string, error) {
 	return matches, nil
 }
 
-func parseExpense(jsonText string) (*expenses.Expenses, error) {
+func parseExpense(jsonText string) (expenses.Expenses, error) {
 	var expense expenses.Expenses
 	err := json.Unmarshal([]byte(jsonText), &expense)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+		return expenses.Expenses{}, fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
-	return &expense, nil
+	return expense, nil
 }

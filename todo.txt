@@ -1,0 +1,9 @@
+What do do next
+
+- Do proper Authentication - do some research on it
+- Design and create database
+- 
+
+Advanced improvement
+- Compress images when received from the request
+- 

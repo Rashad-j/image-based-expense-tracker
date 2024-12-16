@@ -55,3 +55,4 @@ docker-clean: ## Remove Docker container and image
 	docker rm $(DOCKER_CONTAINER) || true
 	@echo "Removing Docker image $(DOCKER_IMAGE)..."
 	docker rmi $(DOCKER_IMAGE) || true
+

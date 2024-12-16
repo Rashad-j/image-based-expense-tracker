@@ -4,3 +4,4 @@
 .env
 bin/
 note.txt
+.http

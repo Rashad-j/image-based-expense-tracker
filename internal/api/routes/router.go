@@ -7,18 +7,16 @@ import (
 )
 
 // SetupRouter initializes all application routes.
-func SetupRouter(authKey string) *gin.Engine {
-	router := gin.Default()
+func SetupRouter(authKey string, handler *handlers.ExpenseHandler) *gin.Engine {
+	router := gin.New()
 
-	// Middleware
-	// router.Use(middleware.MetricsMiddleware())
+	// Logger and Recovery middleware are enabled by default
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
 	router.Use(middleware.AuthMiddleware(authKey))
 
-	// Handlers
-	expenseHandler := handlers.NewExpenseHandler()
-
-	// Routes
-	router.POST("/v1/analyze", expenseHandler.AnalyzeReceipt)
+	router.POST("/v1/analyze", handler.AnalyzeReceipt)
 
 	return router
 }
